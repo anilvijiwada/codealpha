@@ -1,0 +1,58 @@
+import java.util.Scanner;
+
+public class StockTradingPlatform {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Market market = new Market();
+        User user = new User("Alice", 10000);
+
+        while (true) {
+            market.updatePrices();
+            market.displayMarket();
+            user.viewPortfolio(market.getStocks());
+
+            System.out.println("\nMenu:");
+            System.out.println("1. Buy Stock");
+            System.out.println("2. Sell Stock");
+            System.out.println("3. View Transactions");
+            System.out.println("4. Exit");
+            System.out.print("Choose option: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // consume newline
+
+            switch (choice) {
+                case 1 -> {
+                    System.out.print("Enter stock symbol: ");
+                    String symbol = scanner.nextLine().toUpperCase();
+                    if (market.getStocks().containsKey(symbol)) {
+                        System.out.print("Enter quantity: ");
+                        int qty = scanner.nextInt();
+                        scanner.nextLine();
+                        user.buyStock(market.getStocks().get(symbol), qty);
+                    } else {
+                        System.out.println("❌ Invalid stock symbol.");
+                    }
+                }
+                case 2 -> {
+                    System.out.print("Enter stock symbol: ");
+                    String symbol = scanner.nextLine().toUpperCase();
+                    if (market.getStocks().containsKey(symbol)) {
+                        System.out.print("Enter quantity: ");
+                        int qty = scanner.nextInt();
+                        scanner.nextLine();
+                        user.sellStock(market.getStocks().get(symbol), qty);
+                    } else {
+                        System.out.println("❌ Invalid stock symbol.");
+                    }
+                }
+                case 3 -> user.viewTransactions();
+                case 4 -> {
+                    System.out.println("👋 Exiting. Goodbye!");
+                    return;
+                }
+                default -> System.out.println("❌ Invalid option.");
+            }
+        }
+    }
+}

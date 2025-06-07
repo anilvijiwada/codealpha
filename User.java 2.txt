@@ -1,0 +1,62 @@
+import java.util.*;
+
+public class User {
+    private String name;
+    private double balance;
+    private Map<String, Integer> portfolio;
+    private List<Transaction> transactions;
+
+    public User(String name, double balance) {
+        this.name = name;
+        this.balance = balance;
+        this.portfolio = new HashMap<>();
+        this.transactions = new ArrayList<>();
+    }
+
+    public void buyStock(Stock stock, int quantity) {
+        double total = stock.getPrice() * quantity;
+        if (total <= balance) {
+            balance -= total;
+            portfolio.put(stock.getSymbol(), portfolio.getOrDefault(stock.getSymbol(), 0) + quantity);
+            transactions.add(new Transaction(stock.getSymbol(), quantity, stock.getPrice(), "BUY"));
+            System.out.println("✅ Bought " + quantity + " of " + stock.getSymbol());
+        } else {
+            System.out.println("❌ Insufficient balance.");
+        }
+    }
+
+    public void sellStock(Stock stock, int quantity) {
+        int owned = portfolio.getOrDefault(stock.getSymbol(), 0);
+        if (quantity <= owned) {
+            double total = stock.getPrice() * quantity;
+            balance += total;
+            portfolio.put(stock.getSymbol(), owned - quantity);
+            if (portfolio.get(stock.getSymbol()) == 0) portfolio.remove(stock.getSymbol());
+            transactions.add(new Transaction(stock.getSymbol(), quantity, stock.getPrice(), "SELL"));
+            System.out.println("✅ Sold " + quantity + " of " + stock.getSymbol());
+        } else {
+            System.out.println("❌ Not enough shares to sell.");
+        }
+    }
+
+    public void viewPortfolio(Map<String, Stock> market) {
+        System.out.println("\n📊 Portfolio of " + name);
+        double totalValue = balance;
+        for (String symbol : portfolio.keySet()) {
+            int qty = portfolio.get(symbol);
+            double price = market.get(symbol).getPrice();
+            double value = qty * price;
+            totalValue += value;
+            System.out.printf(" - %s: %d shares @ $%.2f = $%.2f\n", symbol, qty, price, value);
+        }
+        System.out.printf("💰 Balance: $%.2f\n", balance);
+        System.out.printf("📈 Total Portfolio Value: $%.2f\n", totalValue);
+    }
+
+    public void viewTransactions() {
+        System.out.println("\n📄 Transaction History:");
+        for (Transaction t : transactions) {
+            System.out.println(" - " + t);
+        }
+    }
+}
